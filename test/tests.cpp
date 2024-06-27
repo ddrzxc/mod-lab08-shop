@@ -14,7 +14,7 @@ TEST(market, test2) {
     Cashier c(100);
     c.Serve(b);
     c.t.join();
-    EXPECT_EQ(bCart * 100, c.workTIme);
+    EXPECT_EQ(bCart * 100, c.workTime);
     EXPECT_EQ(false, c.busy);
 }
 
