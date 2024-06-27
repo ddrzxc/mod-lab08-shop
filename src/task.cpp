@@ -9,11 +9,11 @@ Market::Market(int n, int cSpeed, int qLen) {
 
 void Market::TryAccept(Buyer b) {
     if (buyers.size() == queueLen) {
-        //cout << b.id << " rejected!\n";
+        cout << b.id << " rejected!\n";
         bRejected++;
         return;
     }
-    //cout << b.id << " accepted\n";
+    cout << b.id << " accepted\n";
     bAccepted++;
     unique_lock<mutex> lock(mut);
     b.inQueue = chrono::system_clock::now();
@@ -77,6 +77,7 @@ vector<double> Market::Statistics() {
 
 Cashier::Cashier(int cSpeed) {
     speed = cSpeed;
+    workTime = 0;
 }
 
 void Cashier::Serve(Buyer b) {
