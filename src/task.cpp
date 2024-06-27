@@ -2,9 +2,11 @@
 #include "../include/task.h"
 
 Market::Market(int n, int cSpeed, int qLen) {
+    cout << "market start\n";
     for (int i = 0; i < n; i++)
         cashiers.push_back(Cashier(cSpeed));
     queueLen = qLen;
+    cout << "market created\n";
 }
 
 void Market::TryAccept(Buyer b) {
@@ -35,26 +37,35 @@ void Market::Serving() {
         Buyer b = buyers.front();
         buyers.pop();
         auto now = chrono::system_clock::now();
-        auto bTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - b.inQueue).count();
+        auto bTime = chrono::duration_cast<chrono::milliseconds>(now - b.inQueue).count();
         bWaiting += bTime + b.shopCart.size() * cashiers[c].speed;
+        cout << "cashier join\n";
         if (cashiers[c].t.joinable()) cashiers[c].t.join();
         cashiers[c].Serve(b);
+        cout << "serve buyer end\n";
     }
+    cout << "done\n";
     for (int i = 0; i < cashiers.size(); i++) {
         if (cashiers[i].t.joinable()) cashiers[i].t.join();
         cWork += cashiers[i].workTime;
     }
+    cout << "end serving\n";
 }
 
 void Market::Work(int bCount, int bFlow, int cSize) {
+    cout << "start work\n";
     this->bCount = bCount;
     work = true;
     thread service(&Market::Serving, this);
     random_device rd;
     mt19937 gen(rd());
+    cout << "start for\n";
     for (int i = 0; i < bCount; i++) {
+        cout << "create buyer\n";
         Buyer b(i, cSize);
+        cout << "add qavg\n";
         qAvg += buyers.size();
+        cout << "try accept\n";
         this->TryAccept(b);
         int avgTime = 1000 / bFlow;
         uniform_int_distribution<> dist(avgTime-avgTime/2, avgTime+avgTime/2);
@@ -62,7 +73,7 @@ void Market::Work(int bCount, int bFlow, int cSize) {
     }
     work = false;
     service.join();
-
+    cout << "market work end\n";
 }
 
 vector<double> Market::Statistics() {
