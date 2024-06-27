@@ -31,6 +31,7 @@ void Market::Serving() {
             }
         }
         if (c == -1) continue;
+        unique_lock<mutex> lock(mut);
         Buyer b = buyers.front();
         buyers.pop();
         auto now = chrono::system_clock::now();
